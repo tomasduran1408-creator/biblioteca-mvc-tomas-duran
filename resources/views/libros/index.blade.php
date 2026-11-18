@@ -5,7 +5,33 @@
 
 @section('contenido')
     <h2>Listado de libros</h2>
+<form action="{{ route('libros.index') }}" method="GET">
 
+    <label for="buscar">Buscar por título o autor:</label>
+    <input
+        type="text"
+        id="buscar"
+        name="buscar"
+        placeholder="Buscar por título o autor..."
+        value="{{ $busqueda ?? '' }}"
+    >
+
+    <label for="categoria">Filtrar por categoría:</label>
+    <select name="categoria" id="categoria">
+        <option value="">Todas las categorías</option>
+
+        @foreach($categorias as $categoria)
+            <option value="{{ $categoria->id }}"
+                {{ ($categoria_id ?? '') == $categoria->id ? 'selected' : '' }}>
+                {{ $categoria->nombre }}
+            </option>
+        @endforeach
+    </select>
+
+    <button type="submit">Buscar</button>
+    <a class="boton" href="{{ route('libros.index') }}">Limpiar</a>
+
+</form>
     <a class="boton" href="{{ route('libros.create') }}">
         Registrar nuevo libro
     </a>

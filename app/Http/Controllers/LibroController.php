@@ -8,12 +8,32 @@ use Illuminate\Http\Request;
 
 class LibroController extends Controller
 {
-    public function index()
-    {
-        $libros = Libro::with('categoria')->get();
+   public function index(Request $request)
+{
+    $busqueda = $request->input('buscar');
+    $categoria_id = $request->input('categoria');
 
-        return view('libros.index', compact('libros'));
-    }
+    $libros = Libro::with('categoria')
+        ->when($busqueda, function ($query, $busqueda) {
+            $query->where(function ($q) use ($busqueda) {
+                $q->where('titulo', 'like', "%{$busqueda}%")
+                  ->orWhere('autor', 'like', "%{$busqueda}%");
+            });
+        })
+        ->when($categoria_id, function ($query, $categoria_id) {
+            $query->where('categoria_id', $categoria_id);
+        })
+        ->get();
+
+    $categorias = Categoria::all();
+
+    return view('libros.index', compact(
+        'libros',
+        'busqueda',
+        'categorias',
+        'categoria_id'
+    ));
+}
 
     public function create()
     {
